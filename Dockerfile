@@ -222,9 +222,9 @@ RUN set -x && \
     # folders
     mkdir -p /var/log/supervisor
 
-COPY conf/supervisord.conf /etc/supervisord.conf
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY conf/nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY config/supervisord.conf /etc/supervisord.conf
+COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx-default.conf /etc/nginx/conf.d/default.conf
 
 ### ----------------------------------------------------------
 ### CMD
