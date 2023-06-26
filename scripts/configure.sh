@@ -3,7 +3,7 @@
 # Nginx config
 adduser -D -g 'www-data' www-data
 chown -R www-data:www-data /var/lib/nginx
-mkdir /run/nginx && touch /run/nginx/nginx.pid
+mkdir -p /run/nginx && touch /run/nginx/nginx.pid
 
 # Set variables
 PHP_FPM_USER="www-data"
