@@ -34,6 +34,6 @@ COPY myweb /var/www/html
 
 The latest Docker image use PHP version 8.2 and NGINX version 1.23. You can pull other version. The following version are available:
 
-- PHP 8.2 and NGINX 1.23 (latest)
+- Alpine 3.18, PHP 8.2 and NGINX 1.23
 
 If you need another version, you can fork and edit the `Dockerfile` and then build for your own.
