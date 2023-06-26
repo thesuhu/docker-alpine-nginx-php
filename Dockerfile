@@ -163,7 +163,6 @@ RUN set -x \
                 bash \
                 alpine-sdk \
                 findutils \
-                composer \
             && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
@@ -195,6 +194,9 @@ RUN set -x \
     && if [ -n "/etc/apk/keys/nginx_signing.rsa.pub" ]; then rm -f /etc/apk/keys/nginx_signing.rsa.pub; fi \
 # Bring in curl and ca-certificates to make registering on DNS SD easier
     && apk add --no-cache curl ca-certificates
+
+# install other deps
+RUN  apk add composer
 
 # default page
 COPY www-example/*.php /var/www/html/
