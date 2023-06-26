@@ -163,6 +163,7 @@ RUN set -x \
                 bash \
                 alpine-sdk \
                 findutils \
+                composer \
             && su nobody -s /bin/sh -c " \
                 export HOME=${tempDir} \
                 && cd ${tempDir} \
