@@ -8,8 +8,8 @@ COPY ./config/nginx.conf /etc/nginx/nginx.conf
 COPY ./config/supervisord.conf /etc/supervisord.conf
 
 # default page
-COPY ./config/index.php /var/www/html/index.php
-COPY ./config/phpinfo.php /var/www/html/phpinfo.php
+COPY ./www/index.php /var/www/html/index.php
+COPY ./www/phpinfo.php /var/www/html/phpinfo.php
 
 # scripts
 COPY ./scripts/configure.sh /configure.sh
