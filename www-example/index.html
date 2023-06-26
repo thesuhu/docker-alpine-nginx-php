@@ -28,7 +28,7 @@
         .source-code-link {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #EFEFEF;
             color: #fff;
             text-decoration: none;
             border-radius: 4px;
@@ -38,14 +38,19 @@
         }
     </style>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <h1>Welcome to My Web Page</h1>
         <p>This is the default index page.</p>
         <p>For more information about PHP configuration, click the button below:</p>
-        <a class="phpinfo-link" href="phpinfo.php">View PHP Info</a>
-        <a class="source-code-link" href="https://github.com/thesuhu/docker-alpine-nginx-php" target="_blank">View Source Code</a>
+        <a class="phpinfo-link" href="phpinfo.php">
+            <i class="fab fa-php"></i> PHP Info
+        </a>
+        <a class="source-code-link" href="https://github.com/thesuhu/docker-alpine-nginx-php" target="_blank">
+            <i class="fab fa-github"></i> Source Code
+        </a>
     </div>
 </body>
 </html>
