@@ -202,6 +202,9 @@ COPY scripts/docker-entrypoint.sh /
 COPY scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
 COPY scripts/20-envsubst-on-templates.sh /docker-entrypoint.d
 COPY scripts/30-tune-worker-processes.sh /docker-entrypoint.d
+
+RUN chmod +x -R /entrypoint.d && chmod +x /docker-entrypoint.sh
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 80

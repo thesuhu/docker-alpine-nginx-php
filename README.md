@@ -1,5 +1,7 @@
 # docker-alpine-nginx-php
 
+![GitHub workflow](https://github.com/thesuhu/docker-alpine-nginx-php/actions/workflows/docker-image.yml/badge.svg) ![Docker pull](https://img.shields.io/docker/pulls/thesuhu/docker-alpine-nginx-php)
+
 Docker image to run PHP and Nginx.
 
 ## Usage
@@ -13,7 +15,13 @@ docker pull thesuhu/docker-alpine-nginx-php:<version>
 If you want to serve your web directly from host, just mount your web directory into container. Example:
 
 ```sh
-docker run -itd -p 8080:80  --name myweb -v ~/myweb:/var/www/html thesuhu/docker-alpine-nginx-php:<version>
+docker run -itd -p 8080:80  --name myweb -v ~/myweb:/var/www/html/public thesuhu/docker-alpine-nginx-php:<version>
+```
+
+Or if you just want to try to see the PHP default configuration, run the following command and open the web through your browser. Press `CTRL+C` to stop it.
+
+```sh
+docker run -p 8080:80  --name myweb thesuhu/docker-alpine-nginx-php:8.2
 ```
 
 If you have permission issue with your web directory, try to change the permission to `777` before running container.
@@ -32,8 +40,11 @@ COPY myweb /var/www/html/public
 
 ## Release
 
-The latest Docker image use PHP version 8.2 and NGINX version 1.23. You can pull other version. The following version are available:
+The following version are available:
 
-- Alpine 3.18, PHP 8.2 and NGINX 1.24
+| Tag | Alpine | PHP | NGINX |
+| --- | --- | --- | --- |
+| Latest | 3.18 | 8.2.7 | 1.24 |
+| 8.2 | 3.18 | 8.2.7 | 1.24 |
 
 If you need another version, you can fork and edit the `Dockerfile` and then build for your own.
