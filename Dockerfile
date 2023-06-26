@@ -196,7 +196,7 @@ RUN set -x \
     && apk add --no-cache curl ca-certificates
 
 # default page
-COPY www-example/*.php /var/www/html/public/
+COPY www-example/*.php /var/www/html/
 
 COPY scripts/docker-entrypoint.sh /
 COPY scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
