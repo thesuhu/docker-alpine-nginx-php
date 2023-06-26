@@ -197,6 +197,7 @@ RUN set -x \
 
 # default page
 COPY www-example/*.php /var/www/html/
+COPY www-example/*.html /var/www/html/
 
 COPY scripts/docker-entrypoint.sh /
 COPY scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
