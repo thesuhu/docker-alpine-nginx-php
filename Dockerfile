@@ -196,12 +196,12 @@ RUN set -x \
     && apk add --no-cache curl ca-certificates
 
 # default page
-COPY ./www/*.php /var/www/html/public/
+COPY www/*.php /var/www/html/public/
 
-COPY ./scripts/docker-entrypoint.sh /
-COPY ./scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
-COPY ./scripts/20-envsubst-on-templates.sh /docker-entrypoint.d
-COPY ./scripts/30-tune-worker-processes.sh /docker-entrypoint.d
+COPY scripts/docker-entrypoint.sh /
+COPY scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
+COPY scripts/20-envsubst-on-templates.sh /docker-entrypoint.d
+COPY scripts/30-tune-worker-processes.sh /docker-entrypoint.d
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 80
@@ -222,9 +222,9 @@ RUN set -x && \
     # folders
     mkdir -p /var/log/supervisor
 
-COPY ./conf/supervisord.conf /etc/supervisord.conf
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-COPY ./conf/nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY conf/supervisord.conf /etc/supervisord.conf
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY conf/nginx-default.conf /etc/nginx/conf.d/default.conf
 
 ### ----------------------------------------------------------
 ### CMD
