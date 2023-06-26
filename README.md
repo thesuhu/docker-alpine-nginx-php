@@ -27,7 +27,7 @@ Or you can build new image with your web files. Just create `Dockerfile` file an
 ```sh
 FROM thesuhu/docker-alpine-nginx-php:<version>
 
-COPY myweb /var/www/html
+COPY myweb /var/www/html/public
 ```
 
 ## Release
