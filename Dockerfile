@@ -1,53 +1,59 @@
 FROM php:8.3.14-fpm-alpine3.20
 
+# Tambahkan library tambahan untuk PHP
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-
-# Tambahkan gnu-libiconv
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
 
-# Versi NGINX dan NJS
+# Versi NGINX yang digunakan
 ENV NGINX_VERSION 1.26.2
+ENV PKG_RELEASE 1
 ENV NJS_VERSION 0.8.7
 
-# Setup NGINX dan modul-modulnya
+# Setup user dan grup untuk NGINX
 RUN set -x \
-    && addgroup -g 1020 -S nginx && adduser -S -D -H -u 1020 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx \
-    && wget -O /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub \
-    && KEY_SHA512=$(sha512sum /tmp/nginx_signing.rsa.pub | awk '{print $1}') \
-    && if [ "$KEY_SHA512" != "e09fa32f0a0eab2b879ccbbc4d0e4fb9751486eedda75e35fac65802cc9faa266425edf83e261137a2f4d16281ce2c1a5f4502930fe75154723da014214f0655" ]; then \
-         echo "Key verification failed!"; exit 1; \
-    fi \
-    && mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/ \
-    && apk add -X "https://nginx.org/packages/alpine/v$(egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release)/main" --no-cache \
-        nginx=${NGINX_VERSION} \
-        nginx-module-xslt=${NGINX_VERSION} \
-        nginx-module-geoip=${NGINX_VERSION} \
-        nginx-module-image-filter=${NGINX_VERSION} \
-        nginx-module-njs=${NGINX_VERSION}.${NJS_VERSION} \
-    && apk add --no-cache curl ca-certificates \
-    && apk add --no-cache tzdata \
-    && ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log \
-    && mkdir /docker-entrypoint.d
+    && addgroup -g 1020 -S nginx && adduser -S -D -H -u 1020 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+
+# Unduh dan instal NGINX dan modul-modulnya secara manual
+RUN wget -q https://nginx.org/packages/alpine/v3.20/main/x86_64/nginx-${NGINX_VERSION}-r${PKG_RELEASE}.apk && \
+    wget -q https://nginx.org/packages/alpine/v3.20/main/x86_64/nginx-module-geoip-${NGINX_VERSION}-r2.apk && \
+    wget -q https://nginx.org/packages/alpine/v3.20/main/x86_64/nginx-module-image-filter-${NGINX_VERSION}-r2.apk && \
+    wget -q https://nginx.org/packages/alpine/v3.20/main/x86_64/nginx-module-njs-${NGINX_VERSION}.${NJS_VERSION}-r1.apk && \
+    wget -q https://nginx.org/packages/alpine/v3.20/main/x86_64/nginx-module-xslt-${NGINX_VERSION}-r2.apk && \
+    apk add --allow-untrusted ./nginx-${NGINX_VERSION}-r${PKG_RELEASE}.apk && \
+    apk add --allow-untrusted ./nginx-module-geoip-${NGINX_VERSION}-r2.apk && \
+    apk add --allow-untrusted ./nginx-module-image-filter-${NGINX_VERSION}-r2.apk && \
+    apk add --allow-untrusted ./nginx-module-njs-${NGINX_VERSION}.${NJS_VERSION}-r1.apk && \
+    apk add --allow-untrusted ./nginx-module-xslt-${NGINX_VERSION}-r2.apk && \
+    rm -f *.apk
 
 # Install alat tambahan
-RUN apk add composer supervisor
+RUN apk add --no-cache curl ca-certificates tzdata composer supervisor
 
-# Copy konfigurasi dan skrip
+# Konfigurasi logging untuk NGINX
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log && \
+    mkdir -p /docker-entrypoint.d /var/log/supervisor
+
+# Copy file konfigurasi dan script
 COPY www-example/*.php /var/www/html/
 COPY www-example/*.html /var/www/html/
 COPY scripts/docker-entrypoint.sh /
-COPY scripts/*.sh /docker-entrypoint.d/
+COPY scripts/10-listen-on-ipv6-by-default.sh /docker-entrypoint.d
+COPY scripts/20-envsubst-on-templates.sh /docker-entrypoint.d
+COPY scripts/30-tune-worker-processes.sh /docker-entrypoint.d
 
-RUN chmod +x -R /docker-entrypoint.d && chmod +x /docker-entrypoint.sh
-
-# Konfigurasi supervisord dan nginx
+# Copy konfigurasi supervisord dan NGINX
 COPY config/supervisord.conf /etc/supervisord.conf
 COPY config/nginx.conf /etc/nginx/nginx.conf
 COPY config/nginx-default.conf /etc/nginx/conf.d/default.conf
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+# Beri izin eksekusi pada skrip
+RUN chmod +x -R /docker-entrypoint.d && chmod +x /docker-entrypoint.sh
+
+# Expose port untuk NGINX
 EXPOSE 80
 STOPSIGNAL SIGTERM
 
+# Konfigurasi entrypoint
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
