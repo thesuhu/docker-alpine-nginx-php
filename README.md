@@ -44,7 +44,8 @@ The following version are available:
 
 | Tag | Alpine | PHP | NGINX |
 | --- | --- | --- | --- |
-| Latest | 3.18.2 | 8.2.7 | 1.24.0 |
+| Latest | 3.20.0 | 8.3.14 | 1.26.2 |
+| 8.3 | 3.20.0 | 8.3.14 | 1.26.2 |
 | 8.2 | 3.18.2 | 8.2.7 | 1.24.0 |
 
 If you need another version, you can fork and edit the `Dockerfile` and then build for your own.

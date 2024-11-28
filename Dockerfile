@@ -1,4 +1,4 @@
-FROM php:8.2.7-fpm-alpine3.18
+FROM php:8.3.14-fpm-alpine3.20
 
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
@@ -9,7 +9,7 @@ RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/comm
 ### ----------------------------------------------------------
 # FROM alpine:3.17
 # LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
-ENV NGINX_VERSION 1.24.0
+ENV NGINX_VERSION 1.26.2
 ENV PKG_RELEASE   1
 
 # setup nginx user/group
