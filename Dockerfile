@@ -10,7 +10,7 @@ RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/comm
 # FROM alpine:3.17
 # LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 ENV NGINX_VERSION 1.26.2
-ENV PKG_RELEASE   1
+ENV PKG_RELEASE   2
 
 # setup nginx user/group
 RUN set -x \
@@ -113,7 +113,7 @@ RUN set -x \
 ### ----------------------------------------------------------
 ### FROM nginx:1.24.0-alpine-slim
 
-ENV NJS_VERSION   0.7.12
+ENV NJS_VERSION   0.8.7
 
 RUN set -x \
     && apkArch="$(cat /etc/apk/arch)" \
@@ -157,6 +157,7 @@ RUN set -x \
                 zlib-dev \
                 linux-headers \
                 libxslt-dev \
+                libmaxminddb \
                 gd-dev \
                 geoip-dev \
                 libedit-dev \
