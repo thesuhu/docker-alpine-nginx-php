@@ -10,7 +10,7 @@ RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/comm
 # FROM alpine:3.17
 # LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 ENV NGINX_VERSION 1.26.2
-ENV PKG_RELEASE   2
+ENV PKG_RELEASE   1
 
 # setup nginx user/group
 RUN set -x \
