@@ -5,7 +5,7 @@ ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 # Tambahkan gnu-libiconv
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv
 
-# Versi NGINX
+# Versi NGINX dan NJS
 ENV NGINX_VERSION 1.26.2
 ENV NJS_VERSION 0.8.7
 
