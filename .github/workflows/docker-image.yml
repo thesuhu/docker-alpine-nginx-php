@@ -8,7 +8,20 @@ jobs:
 
   build:
 
+    name: Build PHP ${{ matrix.php_version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php_version: '8.3.36'
+            php_series: '8.3'
+          - php_version: '8.2.35'
+            php_series: '8.2'
+    env:
+      PHP_VERSION: ${{ matrix.php_version }}
+      PHP_SERIES: ${{ matrix.php_series }}
+      IMAGE_NAME: ${{ secrets.DOCKER_USER }}/docker-alpine-nginx-php
     
     steps:
     - uses: actions/checkout@v2
@@ -20,15 +33,15 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         
     - name: Build the Docker image
-      run: docker build --pull . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36 --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3 --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:latest
+      run: docker build --pull . --file Dockerfile --build-arg "PHP_VERSION=$PHP_VERSION" --tag "$IMAGE_NAME:$PHP_VERSION" --tag "$IMAGE_NAME:$PHP_SERIES"
 
     - name: Smoke test NGINX and PHP-FPM
       run: |
-        docker run -d --name php-smoke ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36
+        docker run -d --name php-smoke "$IMAGE_NAME:$PHP_VERSION"
         trap 'docker rm -f php-smoke' EXIT
         for attempt in $(seq 1 30); do
           if docker exec php-smoke curl -fsS http://127.0.0.1/phpinfo.php > "$RUNNER_TEMP/phpinfo.html"; then
-            grep -Fq 'PHP Version 8.3.36' "$RUNNER_TEMP/phpinfo.html"
+            grep -Fq "PHP Version $PHP_VERSION" "$RUNNER_TEMP/phpinfo.html"
             exit 0
           fi
           sleep 1
@@ -38,7 +51,12 @@ jobs:
      
     - name: Docker Push
       run: |
-        docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36
-        docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3
-        docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:latest
+        docker push "$IMAGE_NAME:$PHP_VERSION"
+        docker push "$IMAGE_NAME:$PHP_SERIES"
+
+    - name: Publish latest (PHP 8.3 only)
+      if: matrix.php_series == '8.3'
+      run: |
+        docker tag "$IMAGE_NAME:$PHP_VERSION" "$IMAGE_NAME:latest"
+        docker push "$IMAGE_NAME:latest"
       
