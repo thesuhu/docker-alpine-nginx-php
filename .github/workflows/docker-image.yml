@@ -20,10 +20,25 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
         
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag thesuhu/docker-alpine-nginx-php:8.3 --tag thesuhu/docker-alpine-nginx-php:latest
+      run: docker build --pull . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36 --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3 --tag ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:latest
+
+    - name: Smoke test NGINX and PHP-FPM
+      run: |
+        docker run -d --name php-smoke ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36
+        trap 'docker rm -f php-smoke' EXIT
+        for attempt in $(seq 1 30); do
+          if docker exec php-smoke curl -fsS http://127.0.0.1/phpinfo.php > "$RUNNER_TEMP/phpinfo.html"; then
+            grep -Fq 'PHP Version 8.3.36' "$RUNNER_TEMP/phpinfo.html"
+            exit 0
+          fi
+          sleep 1
+        done
+        docker logs php-smoke
+        exit 1
      
     - name: Docker Push
       run: |
+        docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3.36
         docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:8.3
         docker push ${{secrets.DOCKER_USER}}/docker-alpine-nginx-php:latest
       
