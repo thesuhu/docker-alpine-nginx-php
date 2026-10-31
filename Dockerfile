@@ -1,4 +1,5 @@
-FROM php:8.3.36-fpm-alpine3.23
+ARG PHP_VERSION=8.3.36
+FROM php:${PHP_VERSION}-fpm-alpine3.23
 
 # Gunakan library dari repository Alpine yang sesuai dengan base image.
 RUN apk add --no-cache gnu-libiconv
