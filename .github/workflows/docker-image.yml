@@ -21,6 +21,7 @@ jobs:
     env:
       PHP_VERSION: ${{ matrix.php_version }}
       PHP_SERIES: ${{ matrix.php_series }}
+      NGINX_VERSION: '1.30.7'
       IMAGE_NAME: ${{ secrets.DOCKER_USER }}/docker-alpine-nginx-php
     
     steps:
@@ -39,8 +40,13 @@ jobs:
       run: |
         docker run -d --name php-smoke "$IMAGE_NAME:$PHP_VERSION"
         trap 'docker rm -f php-smoke' EXIT
+        docker exec php-smoke nginx -t
+        docker exec php-smoke php-fpm -t
+        nginx_version="$(docker exec php-smoke nginx -v 2>&1)"
+        printf '%s\n' "$nginx_version"
+        test "$nginx_version" = "nginx version: nginx/$NGINX_VERSION"
         for attempt in $(seq 1 30); do
-          if docker exec php-smoke curl -fsS http://127.0.0.1/phpinfo.php > "$RUNNER_TEMP/phpinfo.html"; then
+          if docker exec php-smoke curl -fsS --connect-timeout 1 --max-time 2 http://127.0.0.1/phpinfo.php > "$RUNNER_TEMP/phpinfo.html"; then
             grep -Fq "PHP Version $PHP_VERSION" "$RUNNER_TEMP/phpinfo.html"
             exit 0
           fi

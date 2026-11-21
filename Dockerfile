@@ -5,7 +5,7 @@ FROM php:${PHP_VERSION}-fpm-alpine3.23
 RUN apk add --no-cache gnu-libiconv
 
 # Versi NGINX stable dan modul yang kompatibel.
-ENV NGINX_VERSION=1.30.6
+ENV NGINX_VERSION=1.30.7
 ENV PKG_RELEASE=1
 ENV NJS_VERSION=1.0.2
 

@@ -44,14 +44,16 @@ The workflow builds and smoke-tests both PHP variants from the same Dockerfile. 
 
 | Tags | Alpine branch | PHP | NGINX | njs |
 | --- | --- | --- | --- | --- |
-| `8.3.36`, `8.3`, `latest` | 3.23 | **8.3.36** | **1.30.6 stable** | 1.0.2 |
-| `8.2.35`, `8.2` | 3.23 | **8.2.35** | **1.30.6 stable** | 1.0.2 |
+| `8.3.36`, `8.3`, `latest` | 3.23 | **8.3.36** | **1.30.7 stable** | 1.0.2 |
+| `8.2.35`, `8.2` | 3.23 | **8.2.35** | **1.30.7 stable** | 1.0.2 |
 
 **`latest` always follows PHP 8.3.** The PHP 8.2 job publishes only `8.2.35` and `8.2`. Local builds default to PHP 8.3.36; select PHP 8.2.35 with `--build-arg PHP_VERSION=8.2.35`.
 
 NGINX and its existing GeoIP, image filter, njs, and XSLT modules are pinned to matching versions from the signed official stable repository. GNU libiconv comes from the matching Alpine stable repository instead of edge; the obsolete `LD_PRELOAD` setting is removed. Composer runs with the base image's PHP rather than installing another PHP runtime through APK. The build checks NGINX and PHP-FPM configuration and runs `composer --version`.
 
-Before publishing each variant, CI starts the container and requests the bundled `phpinfo.php` through NGINX to verify that PHP-FPM serves the selected PHP version over HTTP. Each variant builds and publishes independently.
+Before publishing each variant, CI starts the container, validates NGINX and PHP-FPM configuration, and checks that `nginx -v` reports exactly 1.30.7. It then requests the bundled `phpinfo.php` through NGINX to verify that PHP-FPM serves the selected PHP version over HTTP. A failed check prevents that variant from being published. Each variant builds and publishes independently.
+
+NGINX was updated to **1.30.7 stable** on 21 November 2026 to incorporate the security fixes in the [official changelog](https://nginx.org/en/CHANGES-1.30). The existing GeoIP, image filter, njs, and XSLT packages use matching NGINX 1.30.7 builds; njs remains at 1.0.2.
 
 Historical releases (previous contents of these tags, before the PHP2Shell update):
 
@@ -90,6 +92,7 @@ Recreate deployed containers using the rebuilt image and the same volumes, envir
 
 ```sh
 docker exec myweb php -v
+docker exec myweb nginx -v
 ```
 
 The PHP version should match the selected variant: 8.3.36 or 8.2.35. Test application routing, sessions, cache behavior, and HTTPS behind the load balancer before switching production traffic. The base OS changes from Alpine 3.20 (previous PHP 8.3 image) or 3.18 (previous PHP 8.2 image) to 3.23; check any additional native PHP extensions and custom njs scripts against the new libraries and njs 1.0.2. Existing NGINX configuration is retained.
